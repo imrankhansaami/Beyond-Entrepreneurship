@@ -140,6 +140,8 @@
   .callout.gold{border-left-color:var(--gold)}
   .callout.bad{border-left-color:var(--bad)}
   footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;padding:18px 20px;text-align:center}
+  footer .basmala{font-size:17px;color:var(--gold);margin-bottom:2px}
+  footer .translit{font-size:11px;margin-bottom:10px}
 
   #toast{position:fixed;bottom:22px;right:22px;background:var(--gold);color:#151515;font-weight:700;
     padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:99}
@@ -342,6 +344,8 @@
     <h2>About this dashboard</h2>
     <p>This is the interactive companion to the <strong>BE Framework &amp; Operating System</strong> document set — built for an owner-founder running a small or mid-sized company. It works entirely in your browser: nothing is uploaded; everything you enter is stored in this browser's local storage. Use <em>Export data</em> to keep a portable backup (JSON) and <em>Import</em> to restore it — for example, after clearing your browser data or moving machines.</p>
 
+    <p class="callout gold">Begin with the name of Allah and set your <em>niyyah</em> — your intention — before you open the numbers; may He place <em>barakah</em> in it. The Islamic lens on this whole system lives in <code>barakah.md</code>.</p>
+
     <h3>The idea in one line</h3>
     <p class="callout gold">A founder with the right people, thinking clearly, acting with relentless tactical discipline — turn by turn of the flywheel — until the company outlasts the founder.</p>
 
@@ -362,6 +366,7 @@
       <tr><td><code>01-framework.md</code></td><td>What great means; the 12 principles; the six operating areas</td></tr>
       <tr><td><code>02-system.md</code></td><td>The four rhythms, decision rules, people system, mechanisms</td></tr>
       <tr><td><code>03-tools.md</code></td><td>All 21 worksheets, print-ready</td></tr>
+      <tr><td><code>barakah.md</code></td><td>The Islamic lens — amanah, sidq, ihsan, shura and more, mapped to the system</td></tr>
       <tr><td><code>be-dashboard.html</code></td><td>This file — the living copy</td></tr>
       <tr><td><code>reference/</code></td><td>Official Jim Collins PDFs (personal use)</td></tr>
     </table>
@@ -370,6 +375,8 @@
 </main>
 
 <footer>
+  <div class="basmala" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+  <div class="translit">In the name of Allah, the Most Gracious, the Most Merciful.</div>
   Built from <em>BE 2.0</em> © Jim Collins &amp; Bill Lazier · <em>The Map</em> © 2022 Jim Collins · for personal use with attribution.
 </footer>
 

@@ -1,3 +1,6 @@
+> بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+> *In the name of Allah, the Most Gracious, the Most Merciful.*
+
 # 01 · The Framework — How an Enduring Great Company Works
 
 *The model underneath everything: what "great" means, the twelve-principle path to get there, the six operating areas where the work happens, and how the pieces fit together for a small or mid-sized company.*

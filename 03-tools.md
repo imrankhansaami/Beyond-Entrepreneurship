@@ -1,3 +1,6 @@
+> بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+> *In the name of Allah, the Most Gracious, the Most Merciful.*
+
 # 03 · The Toolbox — Worksheets & Templates
 
 *Everything the framework and the system ask you to produce, as fill-in pages. Print what you need. Keep finished tools in one folder (physical or digital) — the artifacts become your institutional memory.*

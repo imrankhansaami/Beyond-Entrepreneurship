@@ -1,3 +1,6 @@
+> بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+> *In the name of Allah, the Most Gracious, the Most Merciful.*
+
 # 02 · The System — Running It
 
 *The framework describes how an enduring great company works. This file is how you run it — the routine, the rules, and the mechanisms. Greatness comes from consistency more than intensity; this is the consistency.*
