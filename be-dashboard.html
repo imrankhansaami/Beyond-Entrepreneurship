@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BE 2.0 — Company Dashboard</title>
+<style>
+  :root{
+    --bg:#0e0f12; --panel:#15171c; --panel2:#1c1f26; --ink:#f1eee6; --muted:#9aa1ab;
+    --gold:#d4af37; --gold-soft:rgba(212,175,55,.14); --line:#282c34;
+    --ok:#4cc38a; --warn:#e3b04b; --bad:#e5675f; --info:#6aa9e9; --violet:#a78bfa;
+    --r:14px; --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
+  ::selection{background:var(--gold-soft)}
+
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#101114,#0e0f12)}
+  .headwrap{max-width:1080px;margin:0 auto;padding:20px 20px 0}
+  .brandrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .logo{font-weight:800;letter-spacing:.5px;font-size:26px;color:var(--gold);border:2px solid var(--gold);
+        border-radius:12px;padding:6px 12px;line-height:1}
+  .logo span{font-size:15px;vertical-align:super}
+  .brandrow h1{margin:0;font-size:21px;font-weight:700}
+  .brandrow .sub{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .head-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  nav{display:flex;gap:4px;flex-wrap:wrap;margin-top:18px}
+  nav button{background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);
+    padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;border-radius:8px 8px 0 0}
+  nav button:hover{color:var(--ink);background:var(--panel2)}
+  nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
+  main{max-width:1080px;margin:0 auto;padding:26px 20px 60px}
+  .tab{display:none}
+  .tab.active{display:block}
+
+  h2{font-size:19px;margin:34px 0 6px}
+  h2:first-child{margin-top:4px}
+  h3{font-size:16px;margin:22px 0 6px;color:var(--gold)}
+  p.lead{color:var(--muted);margin:4px 0 18px}
+  .muted{color:var(--muted)}
+  .small{font-size:12.5px}
+  hr{border:none;border-top:1px solid var(--line);margin:34px 0}
+
+  button.btn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:10px;
+    padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
+  button.btn:hover{border-color:var(--gold);color:var(--gold)}
+  button.btn.primary{background:var(--gold);border-color:var(--gold);color:#161616}
+  button.btn.primary:hover{filter:brightness(1.08);color:#161616}
+  button.btn.ghost{background:none}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+
+  input[type=text],input[type=number],select,textarea{
+    background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:9px;
+    padding:8px 10px;font:inherit;width:100%}
+  textarea{min-height:74px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+  label.field{display:block;margin:10px 0}
+  label.field .lbl{font-size:12.5px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px;margin:16px 0}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+  .card h4{margin:0 0 6px;font-size:14.5px}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;
+        border:1px solid var(--line);color:var(--muted);background:var(--panel2)}
+  .pill.gold{color:var(--gold);border-color:var(--gold);background:var(--gold-soft)}
+  .pill.ok{color:var(--ok);border-color:rgba(76,195,138,.4)}
+  .pill.warn{color:var(--warn);border-color:rgba(227,176,75,.4)}
+  .pill.bad{color:var(--bad);border-color:rgba(229,103,95,.4)}
+
+  .outcomes{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:16px 0}
+  .outcome{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
+    border-left:4px solid var(--gold);border-radius:var(--r);padding:14px}
+  .outcome h4{margin:0;font-size:14.5px}
+  .outcome p{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+  .multiplier{display:flex;gap:12px;align-items:center;background:var(--panel2);border:1px dashed var(--gold);
+    border-radius:var(--r);padding:12px 16px;margin:6px 0 18px}
+  .multiplier .x{font-size:22px;font-weight:800;color:var(--gold)}
+  .multiplier p{margin:0;font-size:13.5px;color:var(--muted)}
+
+  .stagehead{display:flex;align-items:baseline;gap:10px;margin:24px 0 10px}
+  .stagehead h3{margin:0;color:var(--ink);font-size:15.5px}
+  .stagehead .line{flex:1;border-top:1px solid var(--line)}
+  .stage-cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .pc{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;
+    transition:border-color .15s, transform .15s}
+  .pc:hover{border-color:var(--gold);transform:translateY(-1px)}
+  .pc .num{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:.08em}
+  .pc h4{margin:4px 0 6px;font-size:14.5px}
+  .pc p{margin:0;color:var(--muted);font-size:12.8px}
+
+  #detail{margin-top:18px}
+  #detail .panel{border-left:4px solid var(--gold)}
+
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+  th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .num{font-variant-numeric:tabular-nums}
+
+  .gradebtns{display:inline-flex;gap:4px}
+  .gradebtns button{width:32px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);
+    color:var(--muted);font-weight:700;cursor:pointer;font-size:12.5px}
+  .gradebtns button:hover{border-color:var(--gold);color:var(--ink)}
+  .gradebtns button.on{background:var(--gold);border-color:var(--gold);color:#151515}
+  select.trend{width:110px;padding:6px 8px;font-size:12.5px}
+
+  .bar{height:10px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+  .bar > i{display:block;height:100%;background:var(--gold)}
+  .bar.people > i{background:var(--gold)}
+  .bar.thought > i{background:var(--info)}
+  .bar.action > i{background:var(--ok)}
+  .bar.last > i{background:var(--violet)}
+  .scoreline{display:flex;align-items:center;gap:12px;margin:10px 0}
+  .scoreline .name{width:240px;font-size:13px;font-weight:600}
+  .scoreline .val{width:52px;text-align:right;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  .qitem{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:14px;margin:12px 0}
+  .qitem .qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .qitem h4{margin:0;font-size:14px}
+  .qitem .prompt{color:var(--muted);font-size:13px;margin:6px 0 10px}
+  .qitem select{width:150px}
+
+  .rowline{display:grid;gap:8px;align-items:center;margin:8px 0}
+  .seats .rowline{grid-template-columns:1.3fr 1fr 120px 36px}
+  .prio .rowline{grid-template-columns:1.6fr 1fr 130px 36px}
+  .addrow{display:grid;gap:8px;grid-template-columns:1.3fr 1fr 120px auto;align-items:end}
+  .iconbtn{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;width:34px;height:34px;
+    cursor:pointer;font-size:15px}
+  .iconbtn:hover{border-color:var(--bad);color:var(--bad)}
+  .streak{font-size:34px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1}
+  .checkitem{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .checkitem input{width:18px;height:18px;accent-color:var(--gold);margin-top:2px}
+  .checkitem.sel{color:var(--muted);text-decoration:line-through}
+
+  .callout{border-left:4px solid var(--info);background:var(--panel2);border-radius:10px;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .callout.gold{border-left-color:var(--gold)}
+  .callout.bad{border-left-color:var(--bad)}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;padding:18px 20px;text-align:center}
+
+  #toast{position:fixed;bottom:22px;right:22px;background:var(--gold);color:#151515;font-weight:700;
+    padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:99}
+  #toast.show{opacity:1}
+
+  @media (max-width:640px){
+    .seats .rowline{grid-template-columns:1fr 1fr 90px 34px}
+    .prio .rowline{grid-template-columns:1.4fr 1fr 100px 34px}
+    .addrow{grid-template-columns:1fr 1fr}
+    .scoreline .name{width:150px;font-size:12.3px}
+  }
+  @media print{
+    :root{--bg:#fff;--panel:#fff;--panel2:#f6f6f6;--ink:#111;--muted:#555;--line:#ccc;--gold:#8a6d1f}
+    body{background:#fff;color:#111}
+    header nav,.head-actions{display:none}
+    main{max-width:100%;padding:0}
+    .tab{display:none}
+    .tab.active{display:block}
+    .pc,.card,.panel,.qitem{break-inside:avoid}
+    #toast{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="headwrap">
+    <div class="brandrow">
+      <div class="logo">BE<span>2.0</span></div>
+      <div>
+        <h1>Company Dashboard</h1>
+        <p class="sub">An enduring great company, built on purpose — your working copy. Saves automatically in this browser.</p>
+      </div>
+      <div class="head-actions">
+        <button class="btn" id="btnExport">Export data</button>
+        <button class="btn" id="btnImport">Import</button>
+        <button class="btn primary" id="btnPrint">Print this tab</button>
+        <input type="file" id="fileImport" accept=".json" hidden>
+      </div>
+    </div>
+    <nav id="tabs">
+      <button data-tab="map" class="active">Framework</button>
+      <button data-tab="diag">Diagnostic</button>
+      <button data-tab="questions">12 Questions</button>
+      <button data-tab="toolkit">Toolkit</button>
+      <button data-tab="about">About</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== FRAMEWORK ===================== -->
+  <section id="tab-map" class="tab active">
+    <h2>The destination — what "great" means</h2>
+    <p class="lead">Not bigness. These three outputs, held on three tests. Grade yourself in the Diagnostic tab.</p>
+    <div class="outcomes">
+      <div class="outcome">
+        <h4>Superior Results</h4>
+        <p>You win at your chosen game: financial performance <em>and</em> progress toward the purpose.</p>
+      </div>
+      <div class="outcome">
+        <h4>Distinctive Impact</h4>
+        <p>"If we disappeared tomorrow, who would miss us, and why?" A hole nothing else could easily fill.</p>
+      </div>
+      <div class="outcome">
+        <h4>Lasting Endurance</h4>
+        <p>Prosperous beyond any leader, idea, or cycle. If it cannot be great without you, it isn't great yet.</p>
+      </div>
+    </div>
+
+    <div class="multiplier">
+      <div class="x">×</div>
+      <div>
+        <strong style="color:var(--gold)">Return on Luck</strong> — the multiplier on everything below.
+        <p>You don't control luck (un-caused, consequential, surprising). Great companies get a higher <em>return</em> on it. Caldwell: 2,801 days before the good luck arrived.</p>
+      </div>
+    </div>
+
+    <h2>The path — The Map</h2>
+    <p class="lead">Four stages, twelve principles. The stages build on each other — weak people foundations cap everything above them. Click any principle to open its brief.</p>
+    <div id="mapStages"></div>
+    <div id="detail"></div>
+
+    <hr>
+    <h2>How the work is run</h2>
+    <div class="grid g3">
+      <div class="card"><h4>Six operating areas</h4><p class="muted small">Leadership style · People · Vision · Strategy · Innovation · Tactics — see <strong>01-framework.md</strong></p></div>
+      <div class="card"><h4>Four rhythms</h4><p class="muted small">Annual Reset · Quarterly Advance · Monthly Truths · Weekly Focus — see <strong>02-system.md</strong></p></div>
+      <div class="card"><h4>Twenty-one tools</h4><p class="muted small">Scorecard, key-seat audit, vision builder, strategy one-pager… — see <strong>03-tools.md</strong> and the Toolkit tab</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== DIAGNOSTIC ===================== -->
+  <section id="tab-diag" class="tab">
+    <h2>Great-Company Diagnostic</h2>
+    <p class="lead">Grade honestly — this is the baseline, not a report card for anyone else. A = exceptional, B = good with room, C = spotty, D = little evidence, F = contrary. Trends are optional: did this improve or decline over ~3 years?</p>
+
+    <div class="panel">
+      <h3 style="margin-top:0">Results</h3>
+      <div id="diagResults">
+        <p class="muted small">Grade a few items and your picture will appear here.</p>
+      </div>
+    </div>
+
+    <h3>Outputs</h3>
+    <div id="diagOutputs"></div>
+
+    <h3>Inputs — the twelve principles</h3>
+    <div id="diagInputs"></div>
+
+    <div class="btnrow">
+      <button class="btn" id="btnDiagReset">Reset grading</button>
+      <button class="btn ghost" id="btnDiagPrint">Print</button>
+    </div>
+  </section>
+
+  <!-- ===================== QUESTIONS ===================== -->
+  <section id="tab-questions" class="tab">
+    <h2>The Map — Twelve Questions</h2>
+    <p class="lead">Work one question per month, for a year — individually first, then as a team. Your notes save automatically.</p>
+    <div id="qList"></div>
+  </section>
+
+  <!-- ===================== TOOLKIT ===================== -->
+  <section id="tab-toolkit" class="tab">
+    <h2>Key seats</h2>
+    <p class="lead">A seat is key if its holder makes significant people decisions, failure could be catastrophic, or success has outsized impact. Target: <strong>≥ 90%</strong> filled with the right people.</p>
+    <div class="panel">
+      <div class="addrow">
+        <label class="field" style="margin:0"><span class="lbl">Key seat (role)</span><input type="text" id="seatName" placeholder="e.g. Head of Operations"></label>
+        <label class="field" style="margin:0"><span class="lbl">Person</span><input type="text" id="seatPerson" placeholder="Name"></label>
+        <label class="field" style="margin:0"><span class="lbl">Right person?</span>
+          <select id="seatRight"><option value="yes">Yes</option><option value="notyet">Not yet</option><option value="no">No</option></select>
+        </label>
+        <button class="btn primary" id="btnAddSeat" style="margin-bottom:1px">Add</button>
+      </div>
+      <div class="seats" id="seatList"></div>
+      <div id="seatScore" style="margin-top:12px"></div>
+    </div>
+
+    <h2>Priorities (max 5 — one owner each)</h2>
+    <p class="lead">If a sixth appears, it displaces one of the five or it waits.</p>
+    <div class="panel">
+      <div class="addrow" style="grid-template-columns:1.6fr 1fr 130px auto">
+        <label class="field" style="margin:0"><span class="lbl">Priority (verb + outcome + by when)</span><input type="text" id="prioText" placeholder="e.g. Reach 95% delivery quality by Q4"></label>
+        <label class="field" style="margin:0"><span class="lbl">Owner — one name</span><input type="text" id="prioOwner" placeholder="Name"></label>
+        <label class="field" style="margin:0"><span class="lbl">Status</span>
+          <select id="prioStatus"><option>Not started</option><option>On track</option><option>At risk</option><option>Done</option></select>
+        </label>
+        <button class="btn primary" id="btnAddPrio" style="margin-bottom:1px">Add</button>
+      </div>
+      <div class="prio" id="prioList"></div>
+    </div>
+
+    <h2>20-Mile March</h2>
+    <p class="lead">A concrete marker you hit in good times <em>and</em> bad. Log it honestly — streaks teach.</p>
+    <div class="grid g2">
+      <div class="panel">
+        <label class="field"><span class="lbl">The march</span><input type="text" id="marchName" placeholder="e.g. ≥ 4.2 revenue-per-person-days every month"></label>
+        <label class="field"><span class="lbl">Green standard (hit)</span><input type="text" id="marchTarget" placeholder="e.g. 95% on-time deliveries"></label>
+        <div class="btnrow">
+          <button class="btn primary" id="btnMarchHit">Log: held it (+1)</button>
+          <button class="btn" id="btnMarchMiss">Log: missed (reset)</button>
+        </div>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;justify-content:center;align-items:center">
+        <div class="streak" id="marchStreak">0</div>
+        <div class="muted small" id="marchBest">current streak · best: 0</div>
+      </div>
+    </div>
+
+    <h2>After-action review</h2>
+    <p class="lead">Three questions after any significant effort. Change at most one ingredient.</p>
+    <div class="panel">
+      <label class="field"><span class="lbl">1 · What worked — and why (the mechanism, not the mood)</span><textarea id="aarWorked"></textarea></label>
+      <label class="field"><span class="lbl">2 · What didn't work (brutal facts, without blame)</span><textarea id="aarNot"></textarea></label>
+      <label class="field"><span class="lbl">3 · What we change — and what must never change</span><textarea id="aarChange"></textarea></label>
+      <div class="btnrow"><button class="btn primary" id="btnAddAar">Save review</button></div>
+      <div id="aarList"></div>
+    </div>
+
+    <h2>Stop-doing list</h2>
+    <p class="lead">What you stop doing is as strategic as what you start.</p>
+    <div class="panel">
+      <div class="addrow" style="grid-template-columns:1fr auto">
+        <label class="field" style="margin:0"><span class="lbl">Stop doing…</span><input type="text" id="stopText" placeholder="e.g. Custom work outside our three circles"></label>
+        <button class="btn primary" id="btnAddStop" style="margin-bottom:1px">Add</button>
+      </div>
+      <div id="stopList" style="margin-top:10px"></div>
+    </div>
+
+    <h2>Founder's weekly checklist</h2>
+    <p class="lead">The private rhythm that keeps the public one honest.</p>
+    <div class="panel" id="weekList"></div>
+  </section>
+
+  <!-- ===================== ABOUT ===================== -->
+  <section id="tab-about" class="tab">
+    <h2>About this dashboard</h2>
+    <p>This is the interactive companion to the <strong>BE Framework &amp; Operating System</strong> document set — built for an owner-founder running a small or mid-sized company. It works entirely in your browser: nothing is uploaded; everything you enter is stored in this browser's local storage. Use <em>Export data</em> to keep a portable backup (JSON) and <em>Import</em> to restore it — for example, after clearing your browser data or moving machines.</p>
+
+    <h3>The idea in one line</h3>
+    <p class="callout gold">A founder with the right people, thinking clearly, acting with relentless tactical discipline — turn by turn of the flywheel — until the company outlasts the founder.</p>
+
+    <h3>Sources &amp; attribution</h3>
+    <ul class="muted small" style="line-height:2">
+      <li><em>BE 2.0 (Beyond Entrepreneurship 2.0)</em> — Jim Collins &amp; Bill Lazier (Portfolio/Penguin, 2020). © James C. Collins &amp; William C. Lazier.</li>
+      <li><em>The Map: Twelve Questions for Building a Great Company</em> — © 2022 Jim Collins. The twelve principles and stage structure are used with attribution for personal / intra-company use; the official PDF is in your <code>reference/</code> folder.</li>
+      <li><em>Vision Framework</em> — © 2001 Jim Collins (with Jerry I. Porras). The vision tests behind Tool 9 derive from it.</li>
+      <li><em>Good to Great® Diagnostic Tool</em> — © 2006 Jim Collins. The A–F grading scheme derives from it.</li>
+      <li>Supporting concepts — <em>Built to Last</em> (1994), <em>Good to Great</em> (2001), <em>How the Mighty Fall</em> (2009), <em>Great by Choice</em> (2011), <em>Turning the Flywheel</em> (2019). All concepts © Jim Collins (and co-authors).</li>
+    </ul>
+    <p class="muted small">This dashboard is an independent, unofficial synthesis for personal use. It is not affiliated with or endorsed by Jim Collins. For any use beyond personal/intra-company, obtain the official tools from <strong>jimcollins.com</strong>.</p>
+
+    <h3>How the whole system fits</h3>
+    <table>
+      <tr><th>File</th><th>Role</th></tr>
+      <tr><td><code>README.md</code></td><td>The map and the 90-day quick start</td></tr>
+      <tr><td><code>01-framework.md</code></td><td>What great means; the 12 principles; the six operating areas</td></tr>
+      <tr><td><code>02-system.md</code></td><td>The four rhythms, decision rules, people system, mechanisms</td></tr>
+      <tr><td><code>03-tools.md</code></td><td>All 21 worksheets, print-ready</td></tr>
+      <tr><td><code>be-dashboard.html</code></td><td>This file — the living copy</td></tr>
+      <tr><td><code>reference/</code></td><td>Official Jim Collins PDFs (personal use)</td></tr>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  Built from <em>BE 2.0</em> © Jim Collins &amp; Bill Lazier · <em>The Map</em> © 2022 Jim Collins · for personal use with attribution.
+</footer>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- data ---------------- */
+var STORE_KEY = "be2.dashboard.v1";
+
+var OUTPUTS = [
+  {id:"o1", name:"Superior Results", desc:"Win at your chosen game: financial performance AND progress to purpose."},
+  {id:"o2", name:"Distinctive Impact", desc:"If we disappeared tomorrow, who would miss us and why?"},
+  {id:"o3", name:"Lasting Endurance", desc:"Prosperous beyond any leader, idea, or cycle; stronger after setbacks."}
+];
+
+var STAGES = [
+  {id:"people", label:"Stage 1 · Disciplined People"},
+  {id:"thought", label:"Stage 2 · Disciplined Thought"},
+  {id:"action", label:"Stage 3 · Disciplined Action"},
+  {id:"last", label:"Stage 4 · Building to Last"}
+];
+
+var PRINCIPLES = [
+  {id:"p1", n:1, stage:"people", name:"Level 5 Leadership",
+   short:"Humility + will, ambitious for the cause. Window for credit, mirror for blame.",
+   detail:"A journey, not a personality type. Quiet and ferocious is a legitimate profile; charisma is optional. Rate where you are — and grow through versions 2.0, 3.0 of yourself. Decisions: debate hard before, unify fully after, matched to the timeline the risk allows."},
+  {id:"p2", n:2, stage:"people", name:"First Who, Then What",
+   short:"Right people on the bus, wrong people off, right people in the key seats — before the route.",
+   detail:"One metric to obsess over: the % of key seats filled with the right people (target ≥90%). Develop-or-replace via the seven questions; be rigorous, not ruthless. Great vision without great people is irrelevant."},
+  {id:"p3", n:3, stage:"thought", name:"Genius of the AND",
+   short:"Replace 'or' with 'and' wherever the smart answer is both.",
+   detail:"Freedom AND responsibility. Discipline AND entrepreneurship. Rigor AND creativity. Continuity AND change. Small companies break this constantly — cutting standards to 'move fast', cutting training to 'save time'."},
+  {id:"p4", n:4, stage:"thought", name:"Confront the Brutal Facts",
+   short:"Live the Stockdale Paradox: unwavering faith that you will prevail, AND the discipline to face the facts.",
+   detail:"Climate where the truth is heard: autopsies without blame; questions over statements; never penalize the messenger. 'It is my opinion' is not an argument."},
+  {id:"p5", n:5, stage:"thought", name:"Clarify a Hedgehog Concept",
+   short:"Decisions inside three circles: passion, best-in-the-world capability, economic engine.",
+   detail:"Keep it simple. Know your one economic denominator (profit per X). Learn to say 'no thank you' to big opportunities outside the circles — then you'll have indigestion of opportunity, not starvation."},
+  {id:"p6", n:6, stage:"action", name:"Turn the Flywheel",
+   short:"No single breakthrough — relentless pushing in one direction, turn upon turn, until momentum carries.",
+   detail:"Write your flywheel as a chain of steps that reinforce one another. The enemy is the doom loop: lurching 0-to-100 in a new direction, stopping, starting over."},
+  {id:"p7", n:7, stage:"action", name:"20-Mile March",
+   short:"A concrete marker hit in good times AND bad. Self-control in chaos, restraint in boom.",
+   detail:"Set your own march — measurable, washing-machine-checkable. Keep the streak. Erratic sprint-or-stall behavior is the failure mode it prevents."},
+  {id:"p8", n:8, stage:"action", name:"Fire Bullets, then Cannonballs",
+   short:"Cheap empirical tests first; concentrate forces only when a bullet hits.",
+   detail:"Bullets: low-cost, low-risk experiments that answer a question. Cannonballs: the bet-the-company commitment, made only after evidence and a devil's advocate round. Bullets without calibration are noise; cannonballs without bullets are gambling."},
+  {id:"p9", n:9, stage:"last", name:"Productive Paranoia",
+   short:"Channel worry into preparation — avoid the five stages of decline.",
+   detail:"Stages: hubris born of success; undisciplined pursuit of more; denial of risk and peril; grasping for salvation; capitulation. Each is reversible — if caught early. Never leave yourself open to catastrophe; keep your eyes on the cash flow."},
+  {id:"p10", n:10, stage:"last", name:"Clock Building, not Time Telling",
+   short:"Build a company that works without you — a clock, not one genius telling time.",
+   detail:"Held accountable for successors. Catalytic mechanisms instead of charisma. The last mile of 'beyond entrepreneurship' — and the hardest. Test: how does the company perform when you're not in the building?"},
+  {id:"p11", n:11, stage:"last", name:"Preserve the Core / Stimulate Progress",
+   short:"Values frozen for a century; everything else permanently open to change. Set the next BHAG.",
+   detail:"The master duality. Most failures are getting it backwards: changing the values to fit the moment, or freezing practices until they rot. When a BHAG is reached, set the next before the celebration ends."},
+  {id:"p12", n:12, stage:"mult", name:"Return on Luck",
+   short:"You don't control luck; you control the return on it. ~Half of great leadership is what you do with the unexpected.",
+   detail:"Persist with the company, never with a single idea. When surprise hits, ask 'what is this an opportunity for?' — and stay in the game long enough for the good luck to arrive."}
+];
+
+var QUESTIONS = PRINCIPLES.slice();
+
+var WEEK_ITEMS = [
+  "I kept to my ≤3 priorities",
+  "Window & mirror — one real example of each",
+  "Trust wager honored — no punitive drift",
+  "One specific appreciation given",
+  "One personal touch — note, call, walk",
+  "Vision repeated in some form",
+  "Energy and self-development protected (ever forward)"
+];
+
+/* ---------------- state ---------------- */
+var state = {
+  grades:{}, trends:{}, answers:{}, seats:[], priorities:[],
+  march:{name:"", target:"", streak:0, best:0},
+  aar:[], stop:[], week:[]
+};
+OUTPUTS.concat(PRINCIPLES).forEach(function(p){ state.grades[p.id]=null; state.trends[p.id]=0; });
+PRINCIPLES.forEach(function(p){ state.answers[p.id]={text:"", status:"Not started"}; });
+
+function load(){
+  try{
+    var raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return;
+    var s = JSON.parse(raw);
+    if(s && typeof s === "object"){
+      ["grades","trends","answers","seats","priorities","march","aar","stop","week"].forEach(function(k){
+        if(s[k] !== undefined && s[k] !== null) state[k] = s[k];
+      });
+      OUTPUTS.concat(PRINCIPLES).forEach(function(p){
+        if(state.grades[p.id] === undefined) state.grades[p.id] = null;
+        if(state.trends[p.id] === undefined) state.trends[p.id] = 0;
+      });
+      PRINCIPLES.forEach(function(p){
+        if(!state.answers[p.id]) state.answers[p.id]={text:"", status:"Not started"};
+      });
+    }
+  }catch(e){ /* fresh start on corrupt data */ }
+}
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); toast("Saved"); }
+  catch(e){ toast("Couldn't save — export your data"); }
+}
+
+var toastTimer=null;
+function toast(msg){
+  var el=document.getElementById("toast");
+  el.textContent=msg; el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ el.classList.remove("show"); },1200);
+}
+
+function el(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+/* ---------------- tabs ---------------- */
+var tabButtons = document.querySelectorAll("#tabs button");
+tabButtons.forEach(function(b){
+  b.addEventListener("click", function(){
+    tabButtons.forEach(function(x){ x.classList.remove("active"); });
+    document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); });
+    b.classList.add("active");
+    el("tab-"+b.dataset.tab).classList.add("active");
+    window.scrollTo({top:0});
+  });
+});
+
+/* ---------------- framework map ---------------- */
+function renderMap(){
+  var host = el("mapStages");
+  var html = "";
+  STAGES.forEach(function(st){
+    var items = PRINCIPLES.filter(function(p){ return p.stage===st.id; });
+    html += '<div class="stagehead"><h3>'+esc(st.label)+'</h3><div class="line"></div></div>';
+    html += '<div class="stage-cards">';
+    items.forEach(function(p){
+      html += '<div class="pc" data-p="'+p.id+'">'
+           +  '<div class="num">PRINCIPLE '+p.n+'</div>'
+           +  '<h4>'+esc(p.name)+'</h4>'
+           +  '<p>'+esc(p.short)+'</p></div>';
+    });
+    html += '</div>';
+  });
+  var p12 = PRINCIPLES.filter(function(p){ return p.id==="p12"; })[0];
+  html += '<div class="stagehead"><h3>Multiplier</h3><div class="line"></div></div>';
+  html += '<div class="stage-cards"><div class="pc" data-p="p12">'
+       +  '<div class="num">PRINCIPLE 12 · MULTIPLIES ALL STAGES</div>'
+       +  '<h4>'+esc(p12.name)+'</h4><p>'+esc(p12.short)+'</p></div></div>';
+  host.innerHTML = html;
+  host.querySelectorAll(".pc").forEach(function(card){
+    card.addEventListener("click", function(){
+      var p = PRINCIPLES.filter(function(x){ return x.id===card.dataset.p; })[0];
+      var stage = STAGES.filter(function(s){ return s.id===p.stage; })[0];
+      el("detail").innerHTML = '<div class="panel"><span class="pill gold">'
+        + esc(stage ? stage.label : "Multiplier") + '</span>'
+        + '<h3 style="margin-bottom:4px">' + p.n + ' · ' + esc(p.name) + '</h3>'
+        + '<p style="margin-top:0">' + esc(p.detail) + '</p>'
+        + '<p class="muted small" style="margin-bottom:0">Reflection: “' + esc(qText(p.id)) + '”</p></div>';
+      el("detail").scrollIntoView({behavior:"smooth", block:"nearest"});
+    });
+  });
+}
+function qText(id){
+  var found = QUESTIONS.filter(function(q){ return q.id===id; })[0];
+  return found ? qPrompt(found.id) : "";
+}
+function qPrompt(id){
+  var map = {
+    p1:"Where are we on the journey to Level 5 leadership — and where am I?",
+    p2:"Do we practice first-who: right people on the bus, and in the key seats?",
+    p3:"Where must we replace the tyranny of the OR with the genius of the AND?",
+    p4:"What are our brutal facts, and how well do we live the Stockdale Paradox?",
+    p5:"Do we make decisions inside the three circles of our Hedgehog Concept?",
+    p6:"What is our flywheel, and how far can it go?",
+    p7:"Have we embraced 20-Mile March discipline in every element of the flywheel?",
+    p8:"What bullets and cannonballs should we fire to renew and extend the flywheel?",
+    p9:"Where should we channel our productive paranoia, to avoid the five stages of decline?",
+    p10:"Have we made the shift from time telling to clock building?",
+    p11:"How can we better preserve the core and stimulate progress — and do we need a BHAG?",
+    p12:"What is our return on luck — good and bad — and how do we increase it?"
+  };
+  return map[id] || "";
+}
+
+/* ---------------- diagnostic ---------------- */
+var GV = {A:4,B:3,C:2,D:1,F:0};
+var GRADES = ["A","B","C","D","F"];
+
+function gradeRow(item){
+  var g = state.grades[item.id];
+  var btns = GRADES.map(function(gr){
+    return '<button data-g="'+gr+'" data-id="'+item.id+'" class="'+(g===gr?"on":"")+'">'+gr+'</button>';
+  }).join("");
+  var trend = state.trends[item.id] || 0;
+  var tOpts = [-2,-1,0,1,2].map(function(v){
+    var lab = v===-2?"−2 declined hard":v===-1?"−1 declined":v===0?"0 steady":v===1?"+1 improved":"+2 improved hard";
+    return '<option value="'+v+'"'+(trend===v?" selected":"")+'>'+lab+'</option>';
+  }).join("");
+  return '<div class="qitem" style="margin:10px 0"><div class="qhead">'
+    + '<h4>'+item.n+' · '+esc(item.name)+'</h4>'
+    + '<span style="display:flex;gap:8px;align-items:center">'
+    +   '<span class="gradebtns" data-id="'+item.id+'">'+btns+'</span>'
+    +   '<select class="trend" data-id="'+item.id+'">'+tOpts+'</select>'
+    + '</span></div>'
+    + '<p class="prompt">'+esc(item.short)+'</p></div>';
+}
+function renderDiag(){
+  var outs = el("diagOutputs");
+  var ins = el("diagInputs");
+  outs.innerHTML = OUTPUTS.map(function(o,i){
+    o.n = i+1; return gradeRow(o);
+  }).join("");
+  ins.innerHTML = PRINCIPLES.map(gradeRow).join("");
+  wireDiag();
+  renderDiagResults();
+}
+function wireDiag(){
+  document.querySelectorAll(".gradebtns").forEach(function(wrap){
+    wrap.querySelectorAll("button").forEach(function(b){
+      b.addEventListener("click", function(){
+        var id = wrap.dataset.id;
+        state.grades[id] = (state.grades[id]===b.dataset.g) ? null : b.dataset.g;
+        wrap.querySelectorAll("button").forEach(function(x){
+          x.classList.toggle("on", x.dataset.g===state.grades[id]);
+        });
+        renderDiagResults(); save();
+      });
+    });
+  });
+  document.querySelectorAll("select.trend").forEach(function(sel){
+    sel.addEventListener("change", function(){
+      state.trends[sel.dataset.id] = parseInt(sel.value,10)||0;
+      renderDiagResults(); save();
+    });
+  });
+}
+function stageStats(ids){
+  var vals = ids.map(function(id){ return state.grades[id]; })
+                .filter(function(g){ return g!==null && g!==undefined; })
+                .map(function(g){ return GV[g]; });
+  if(!vals.length) return null;
+  var avg = vals.reduce(function(a,b){return a+b;},0)/vals.length;
+  return {count:vals.length, total:ids.length, pct:Math.round(avg/4*100)};
+}
+function renderDiagResults(){
+  var host = el("diagResults");
+  var html = "";
+  var allVals = [];
+  OUTPUTS.concat(PRINCIPLES).forEach(function(p){
+    if(state.grades[p.id]!==null && state.grades[p.id]!==undefined) allVals.push(GV[state.grades[p.id]]);
+  });
+  if(!allVals.length){ host.innerHTML = '<p class="muted small">Grade a few items and your picture will appear here.</p>'; return; }
+
+  /* outputs */
+  var outStats = OUTPUTS.map(function(o){ return stageStats([o.id]); });
+  html += '<div class="grid g3">';
+  OUTPUTS.forEach(function(o,i){
+    var s = outStats[i];
+    html += '<div class="card"><h4>'+esc(o.name)+'</h4>'
+      + '<div class="bar"><i style="width:'+(s?s.pct:0)+'%"></i></div>'
+      + '<p class="muted small" style="margin:6px 0 0">'+(s?s.pct+"%":'not graded')+'</p></div>';
+  });
+  html += '</div>';
+
+  /* stages */
+  html += '<h3>Stages</h3>';
+  STAGES.forEach(function(st){
+    var ids = PRINCIPLES.filter(function(p){return p.stage===st.id;}).map(function(p){return p.id;});
+    var s = stageStats(ids);
+    html += '<div class="scoreline"><span class="name">'+esc(st.label)+'</span>'
+      + '<span class="val">'+(s?s.pct+"%":"—")+'</span>'
+      + '<span class="bar '+st.id+'" style="flex:1"><i style="width:'+(s?s.pct:0)+'%"></i></span></div>';
+  });
+  var ps = stageStats(PRINCIPLES.map(function(p){return p.id;}));
+  var pct = Math.round(allVals.reduce(function(a,b){return a+b;},0)/allVals.length/4*100);
+  html += '<div class="scoreline"><span class="name"><strong>Path score (graded items)</strong></span>'
+        + '<span class="val"><strong>'+pct+'%</strong></span>'
+        + '<span class="bar" style="flex:1"><i style="width:'+pct+'%"></i></span></div>';
+
+  /* fix first */
+  var graded = PRINCIPLES.filter(function(p){ return state.grades[p.id]!==null && state.grades[p.id]!==undefined; });
+  graded.sort(function(a,b){ return GV[state.grades[a.id]]-GV[state.grades[b.id]]; });
+  var low = graded.slice(0,3);
+  if(low.length){
+    html += '<h3>Fix first</h3><ul style="margin:6px 0 0;padding-left:20px">';
+    low.forEach(function(p){
+      html += '<li><strong>'+esc(p.name)+'</strong> ('+state.grades[p.id]+') — '+esc(p.short)+'</li>';
+    });
+    html += '</ul>';
+    html += '<p class="muted small" style="margin-top:8px">Weak people foundations cap everything above them — fix lowest stages first, then re-grade in 90 days.</p>';
+  }
+  host.innerHTML = html;
+}
+
+/* ---------------- questions ---------------- */
+function renderQuestions(){
+  var host = el("qList");
+  host.innerHTML = PRINCIPLES.map(function(p){
+    var a = state.answers[p.id] || {text:"",status:"Not started"};
+    var statuses = ["Not started","In motion","Strong"];
+    var sel = statuses.map(function(s){
+      return '<option'+(a.status===s?" selected":"")+'>'+s+'</option>'; }).join("");
+    return '<div class="qitem"><div class="qhead">'
+      + '<h4>'+p.n+' · '+esc(p.name)+'</h4>'
+      + '<select data-id="'+p.id+'">'+sel+'</select></div>'
+      + '<p class="prompt">'+esc(qPrompt(p.id))+'</p>'
+      + '<textarea data-id="'+p.id+'" placeholder="Your notes — facts, consequences, one decision or experiment with an owner and a date…">'+esc(a.text)+'</textarea></div>';
+  }).join("");
+  host.querySelectorAll("textarea").forEach(function(t){
+    t.addEventListener("change", function(){
+      state.answers[t.dataset.id].text = t.value; save();
+    });
+  });
+  host.querySelectorAll("select").forEach(function(s){
+    s.addEventListener("change", function(){
+      state.answers[s.dataset.id].status = s.value; save();
+    });
+  });
+}
+
+/* ---------------- toolkit: seats ---------------- */
+function renderSeats(){
+  var host = el("seatList");
+  host.innerHTML = state.seats.map(function(r,i){
+    return '<div class="rowline">'
+      + '<input type="text" value="'+esc(r.seat)+'" data-i="'+i+'" data-k="seat" placeholder="Seat">'
+      + '<input type="text" value="'+esc(r.person)+'" data-i="'+i+'" data-k="person" placeholder="Person">'
+      + '<select data-i="'+i+'" data-k="right">'
+      +   '<option value="yes"'+(r.right==="yes"?" selected":"")+'>Yes</option>'
+      +   '<option value="notyet"'+(r.right==="notyet"?" selected":"")+'>Not yet</option>'
+      +   '<option value="no"'+(r.right==="no"?" selected":"")+'>No</option>'
+      + '</select>'
+      + '<button class="iconbtn" data-del="'+i+'" title="Remove">×</button></div>';
+  }).join("");
+  host.querySelectorAll("input").forEach(function(inp){
+    inp.addEventListener("change", function(){
+      state.seats[inp.dataset.i][inp.dataset.k] = inp.value; save(); renderSeats();
+    });
+  });
+  host.querySelectorAll("select").forEach(function(sel){
+    sel.addEventListener("change", function(){
+      state.seats[sel.dataset.i][sel.dataset.k] = sel.value; save(); renderSeats();
+    });
+  });
+  host.querySelectorAll("[data-del]").forEach(function(b){
+    b.addEventListener("click", function(){
+      state.seats.splice(parseInt(b.dataset.del,10),1); save(); renderSeats();
+    });
+  });
+  var named = state.seats.filter(function(r){ return (r.seat||"").trim()!==""; });
+  var yes = named.filter(function(r){ return r.right==="yes"; }).length;
+  var host2 = el("seatScore");
+  if(!named.length){ host2.innerHTML = '<span class="muted small">Add your key seats to see your score (target ≥ 90%).</span>'; return; }
+  var pct = Math.round(yes/named.length*100);
+  var cls = pct>=90 ? "ok" : (pct>=70 ? "warn" : "bad");
+  host2.innerHTML = '<span class="pill '+cls+'" style="font-size:14px">'+pct+'% right people</span>'
+    + ' <span class="muted small">'+yes+' of '+named.length+' key seats — target ≥ 90%'
+    + (pct<90 ? '. Below 90%: the #1 topic this quarter.' : '. Keep it there — recalibrate quarterly.')+'</span>';
+}
+el("btnAddSeat").addEventListener("click", function(){
+  var s = el("seatName").value.trim();
+  if(!s) return;
+  state.seats.push({seat:s, person:el("seatPerson").value.trim(), right:el("seatRight").value});
+  el("seatName").value=""; el("seatPerson").value=""; el("seatRight").value="yes";
+  save(); renderSeats();
+});
+
+/* ---------------- toolkit: priorities ---------------- */
+function renderPriorities(){
+  var host = el("prioList");
+  host.innerHTML = state.priorities.map(function(r,i){
+    var statuses = ["Not started","On track","At risk","Done"];
+    var sel = statuses.map(function(s){
+      return '<option'+(r.status===s?" selected":"")+'>'+s+'</option>'; }).join("");
+    return '<div class="rowline">'
+      + '<input type="text" value="'+esc(r.text)+'" data-i="'+i+'" data-k="text" placeholder="Priority">'
+      + '<input type="text" value="'+esc(r.owner)+'" data-i="'+i+'" data-k="owner" placeholder="Owner">'
+      + '<select data-i="'+i+'" data-k="status">'+sel+'</select>'
+      + '<button class="iconbtn" data-del="'+i+'" title="Remove">×</button></div>';
+  }).join("") || '<p class="muted small" style="margin:8px 0 0">No priorities yet — add up to five, one owner each.</p>';
+  host.querySelectorAll("input").forEach(function(inp){
+    inp.addEventListener("change", function(){
+      state.priorities[inp.dataset.i][inp.dataset.k] = inp.value; save();
+    });
+  });
+  host.querySelectorAll("select").forEach(function(sel){
+    sel.addEventListener("change", function(){
+      state.priorities[sel.dataset.i][sel.dataset.k] = sel.value; save();
+    });
+  });
+  host.querySelectorAll("[data-del]").forEach(function(b){
+    b.addEventListener("click", function(){
+      state.priorities.splice(parseInt(b.dataset.del,10),1); save(); renderPriorities();
+    });
+  });
+  el("btnAddPrio").disabled = state.priorities.length>=5;
+  el("btnAddPrio").textContent = state.priorities.length>=5 ? "Five is the max" : "Add";
+}
+el("btnAddPrio").addEventListener("click", function(){
+  var t = el("prioText").value.trim();
+  if(!t || state.priorities.length>=5) return;
+  state.priorities.push({text:t, owner:el("prioOwner").value.trim(), status:el("prioStatus").value});
+  el("prioText").value=""; el("prioOwner").value=""; el("prioStatus").value="Not started";
+  save(); renderPriorities();
+});
+
+/* ---------------- toolkit: march ---------------- */
+function renderMarch(){
+  el("marchName").value = state.march.name || "";
+  el("marchTarget").value = state.march.target || "";
+  el("marchStreak").textContent = state.march.streak || 0;
+  el("marchBest").textContent = "current streak · best: " + (state.march.best || 0);
+}
+el("marchName").addEventListener("change", function(){ state.march.name=el("marchName").value; save(); });
+el("marchTarget").addEventListener("change", function(){ state.march.target=el("marchTarget").value; save(); });
+el("btnMarchHit").addEventListener("click", function(){
+  state.march.streak = (state.march.streak||0)+1;
+  if(state.march.streak > (state.march.best||0)) state.march.best = state.march.streak;
+  save(); renderMarch(); toast("March held — streak " + state.march.streak);
+});
+el("btnMarchMiss").addEventListener("click", function(){
+  state.march.streak = 0; save(); renderMarch(); toast("Miss logged — what changes?");
+});
+
+/* ---------------- toolkit: after-action ---------------- */
+function renderAar(){
+  var host = el("aarList");
+  if(!state.aar.length){ host.innerHTML = '<p class="muted small" style="margin-top:12px">No reviews yet.</p>'; return; }
+  host.innerHTML = state.aar.map(function(r,i){
+    return '<div class="card" style="margin-top:10px"><div class="qhead" style="display:flex;justify-content:space-between">'
+      + '<strong class="small muted">'+esc(r.date)+'</strong>'
+      + '<button class="iconbtn" data-del="'+i+'" title="Remove">×</button></div>'
+      + '<p class="small" style="margin:6px 0 2px"><strong>Worked:</strong> '+esc(r.worked)+'</p>'
+      + '<p class="small" style="margin:2px 0"><strong>Didn\'t:</strong> '+esc(r.didnt)+'</p>'
+      + '<p class="small" style="margin:2px 0 0"><strong>Change / Keep:</strong> '+esc(r.change)+'</p></div>';
+  }).join("");
+  host.querySelectorAll("[data-del]").forEach(function(b){
+    b.addEventListener("click", function(){
+      state.aar.splice(parseInt(b.dataset.del,10),1); save(); renderAar();
+    });
+  });
+}
+el("btnAddAar").addEventListener("click", function(){
+  var w=el("aarWorked").value.trim(), n=el("aarNot").value.trim(), c=el("aarChange").value.trim();
+  if(!w && !n && !c) return;
+  state.aar.unshift({date:new Date().toLocaleDateString(), worked:w, didnt:n, change:c});
+  el("aarWorked").value=""; el("aarNot").value=""; el("aarChange").value="";
+  save(); renderAar(); toast("Review saved");
+});
+
+/* ---------------- toolkit: stop doing ---------------- */
+function renderStop(){
+  var host = el("stopList");
+  host.innerHTML = state.stop.map(function(r,i){
+    return '<div class="checkitem'+(r.done?" sel":"")+'">'
+      + '<input type="checkbox" data-i="'+i+'" data-k="done"'+(r.done?" checked":"")+'>'
+      + '<span style="flex:1">'+esc(r.text)+'</span>'
+      + '<button class="iconbtn" data-del="'+i+'" title="Remove">×</button></div>';
+  }).join("") || '<span class="muted small">Nothing stopped yet — the list protects your focus.</span>';
+  host.querySelectorAll("input[type=checkbox]").forEach(function(c){
+    c.addEventListener("change", function(){
+      state.stop[c.dataset.i].done = c.checked; save(); renderStop();
+    });
+  });
+  host.querySelectorAll("[data-del]").forEach(function(b){
+    b.addEventListener("click", function(){
+      state.stop.splice(parseInt(b.dataset.del,10),1); save(); renderStop();
+    });
+  });
+}
+el("btnAddStop").addEventListener("click", function(){
+  var t=el("stopText").value.trim(); if(!t) return;
+  state.stop.push({text:t, done:false}); el("stopText").value="";
+  save(); renderStop();
+});
+
+/* ---------------- toolkit: weekly ---------------- */
+function renderWeek(){
+  var host = el("weekList");
+  host.innerHTML = WEEK_ITEMS.map(function(t,i){
+    var on = !!state.week[i];
+    return '<label class="checkitem'+(on?" sel":"")+'"><input type="checkbox" data-i="'+i+'"'+(on?" checked":"")+'>'
+      + '<span>'+esc(t)+'</span></label>';
+  }).join("") + '<div class="btnrow"><button class="btn ghost" id="btnWeekClear">Clear week</button></div>';
+  host.querySelectorAll("input[type=checkbox]").forEach(function(c){
+    c.addEventListener("change", function(){
+      state.week[c.dataset.i] = c.checked; save(); renderWeek();
+    });
+  });
+  el("btnWeekClear").addEventListener("click", function(){
+    state.week = []; save(); renderWeek();
+  });
+}
+
+/* ---------------- export / import / print / reset ---------------- */
+el("btnExport").addEventListener("click", function(){
+  var blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "be-dashboard-" + new Date().toISOString().slice(0,10) + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("Exported");
+});
+el("btnImport").addEventListener("click", function(){ el("fileImport").click(); });
+el("fileImport").addEventListener("change", function(){
+  var f = el("fileImport").files[0]; if(!f) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var s = JSON.parse(reader.result);
+      ["grades","trends","answers","seats","priorities","march","aar","stop","week"].forEach(function(k){
+        if(s[k] !== undefined) state[k] = s[k];
+      });
+      save(); renderAll(); toast("Imported");
+    }catch(e){ toast("Import failed — not a valid export file"); }
+  };
+  reader.readAsText(f);
+  el("fileImport").value = "";
+});
+el("btnPrint").addEventListener("click", function(){ window.print(); });
+el("btnDiagPrint").addEventListener("click", function(){ window.print(); });
+el("btnDiagReset").addEventListener("click", function(){
+  OUTPUTS.concat(PRINCIPLES).forEach(function(p){ state.grades[p.id]=null; state.trends[p.id]=0; });
+  save(); renderDiag(); toast("Grading reset");
+});
+
+/* ---------------- boot ---------------- */
+function renderAll(){
+  renderMap(); renderDiag(); renderQuestions(); renderSeats(); renderPriorities();
+  renderMarch(); renderAar(); renderStop(); renderWeek();
+}
+load();
+renderAll();
+})();
+</script>
+</body>
+</html>

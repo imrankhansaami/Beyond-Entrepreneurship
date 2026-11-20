@@ -1,0 +1,11 @@
+# Copyrighted Jim Collins tool PDFs — personal use only; not distributed via Git.
+# Restore locally from jimcollins.com (see reference/README.md).
+reference/*.pdf
+
+# OpenChamber session internals (screenshots, session state)
+.openchamber/
+
+# OS junk
+Thumbs.db
+desktop.ini
+.DS_Store
